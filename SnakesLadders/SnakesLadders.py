@@ -59,7 +59,6 @@ DIE_SIDES = 4
 def rollDie():
     return random.randint(1, DIE_SIDES)
 
-
 game = GameFSM(16)
 
 
