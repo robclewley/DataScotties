@@ -10,8 +10,13 @@ import random
 
 class State(object):
     def __init__(self, ix):
+        """index is the position on the board for this state instance.
+        link is either None (normal blank location) or the index of a state connected
+        by a snake or a ladder.
+        """
         self.index = ix
         self.link = None  # placeholder, not None if Snake or Ladder
+        self.kind = 'B'  # placeholder blank state (updated in first call to process)
 
     def process(self):
         """Action when landed upon"""
@@ -48,7 +53,7 @@ class GameFSM(object):
         # record of moves, die rolls, and snake/ladder use
         self.records = []
 
-    def move(self, die):
+    def move_and_record(self, die):
         """die is an integer
         """
         start_pos = self.position
@@ -60,8 +65,8 @@ class GameFSM(object):
             kind = 'B'
             final_pos = self.n
         else:
-            kind = state_obj.kind
             final_pos = state_obj.process()
+            kind = state_obj.kind
         self.position = final_pos
         # all this could be written more consisely as
         #self.position = self.all_states[self.position+die].process()
@@ -85,30 +90,27 @@ class GameFSM(object):
             print("New position is {}".format(self.position))
         print("Game over!")
 
+# Find total number of moves from records
+def count_moves(records):
+    return len(records)
+
+# Find number of snakes or ladders used in game
+def count_snakes_and_ladders(records):
+    """
+    records is a list of dictionaries keyed with 'kind', 'start', 'end', 'die'
+    Returns a pair (s, l) of counts of landing on any snake or ladder
+    """
+    tot_s = 0
+    tot_l = 0
+    for rec in records:
+        if rec['kind'] == 'S':
+            tot_s = tot_s + 1
+        elif rec['kind'] == 'L':
+            tot_l = tot_l + 1
+    return tot_s, tot_l
 
 def rollDie():
     return random.randint(1, DIE_SIDES)
 
 # Global constant in caps
 DIE_SIDES = 4
-
-game = GameFSM(16)
-
-
-# Make ladders
-game.all_states[2].link = 10
-game.all_states[8].link = 14
-
-# Make snakes
-game.all_states[11].link = 4
-game.all_states[15].links = 6
-
-#print(game.all_states)
-
-game.run()
-
-print(game.records)
-
-# Find total number of moves from records
-
-# Find number of snakes or ladders used in game
