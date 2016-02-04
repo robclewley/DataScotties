@@ -3,6 +3,13 @@ Finite State Machine for Snakes and Ladders game
 
 Kind character codes:
     S = Snake, L = Ladder (aka Chute), B = Blank
+
+How to use:
+1. Make a game object with the number of board squares
+2. Create the links between state objects to define snakes or ladders
+3. Call game.make_state_kinds() to finish initializations
+4. Call game.run()
+5. Access game.records object to see results
 """
 # coding: utf-8
 
@@ -18,23 +25,30 @@ class State(object):
         self.link = None  # placeholder, not None if Snake or Ladder
         self.kind = 'B'  # placeholder blank state (updated in first call to process)
 
-    def process(self):
-        """Action when landed upon"""
-        if self.link:
+    def make_kind(self):
+        if self.link != self.index:
             if self.link > self.index:
                 # ! this is inefficient because it gets re-updated every time
                 # this method is called!
                 self.kind = 'L'
-                print("Ladder from {0} -> {1}".format(self.index, self.link))
-                return self.link
             else:
                 self.kind = 'S'
-                print("Snake from {0} -> {1}".format(self.index, self.link))
-                return self.link
         else:
             # link is None: "Blank" = not a snake or ladder
             self.kind = 'B'
-            return self.index
+
+    def process(self):
+        """Action when landed upon"""
+        return self.link
+
+    def __repr__(self):
+        if self.kind == 'S':
+            s = ', Snake'
+        elif self.kind == 'L':
+            s = ', Ladder'
+        else:
+            s = ''
+        return "State({0}{1})".format(self.index, s)
 
 
 class GameFSM(object):
@@ -42,7 +56,7 @@ class GameFSM(object):
         # list of State objects for each position on the board
         self.all_states = []
         # current position of player on board
-        self.position = 0
+        #self.position = 0
         # size of board
         self.n = n
         # make empty board states for each position
@@ -51,7 +65,15 @@ class GameFSM(object):
             blank_state = State(ix)
             self.all_states.append(blank_state)
         # record of moves, die rolls, and snake/ladder use
-        self.records = []
+        #self.records = []
+        # Reset method takes care of position and records
+        self.reset()
+
+    def make_state_kinds(self):
+        """Must run this after creating the snakes and ladder links, before a game
+        """
+        for state in self.all_states:
+            state.make_kind()
 
     def move_and_record(self, die):
         """die is an integer
@@ -76,19 +98,26 @@ class GameFSM(object):
                   'end': self.position}
         self.records.append(record)
 
+    def reset(self):
+        """Reset game state for a new game
+        """
+        self.position = 0
+        self.records = []
+
     def run(self):
         """
         Run one whole game
         """
-        print("Starting game!")
+        self.reset()
+        #print("Starting game!")
         while self.position < self.n:
             # roll die
             die = rollDie()
-            print("Die={}".format(die))
+            #print("Die={}".format(die))
             # move based on die roll and record results
             self.move_and_record(die)
-            print("New position is {}".format(self.position))
-        print("Game over!")
+            #print("New position is {}".format(self.position))
+        #print("Game over!")
 
 # Find total number of moves from records
 def count_moves(records):
