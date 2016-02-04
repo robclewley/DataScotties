@@ -22,7 +22,7 @@ class State(object):
         by a snake or a ladder.
         """
         self.index = ix
-        self.link = None  # placeholder, not None if Snake or Ladder
+        self.link = ix  # placeholder, not = index if Snake or Ladder
         self.kind = 'B'  # placeholder blank state (updated in first call to process)
 
     def make_kind(self):
