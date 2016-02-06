@@ -52,7 +52,7 @@ class State(object):
 
 
 class GameFSM(object):
-    def __init__(self, n):
+    def __init__(self, n, max_counter_safeguard=5000):
         # list of State objects for each position on the board
         self.all_states = []
         # current position of player on board
@@ -68,6 +68,7 @@ class GameFSM(object):
         #self.records = []
         # Reset method takes care of position and records
         self.reset()
+        self.max_counter_safeguard = max_counter_safeguard
 
     def make_state_kinds(self):
         """Must run this after creating the snakes and ladder links, before a game
@@ -101,6 +102,7 @@ class GameFSM(object):
     def reset(self):
         """Reset game state for a new game
         """
+        self.counter = 0  # to stop (theoretically) infinite loops
         self.position = 0
         self.records = []
 
@@ -110,9 +112,11 @@ class GameFSM(object):
         """
         self.reset()
         #print("Starting game!")
-        while self.position < self.n:
+        while self.position < self.n \
+              and self.counter < self.max_counter_safeguard:
             # roll die
             die = rollDie()
+            self.counter += 1
             #print("Die={}".format(die))
             # move based on die roll and record results
             self.move_and_record(die)
