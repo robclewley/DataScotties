@@ -49,8 +49,8 @@ def convert_records(records):
             d[k].append(recdict[k])
     return pd.DataFrame(d)
 
-def multi_run(n):
-    """n is number of times to run game, where game is a globally defined GameFSM object.
+def multi_run(game, n):
+    """game parameter is a GameFSM object, n is number of times to run game.
     Returns list of dataframes created from move records (using convert_records)
     """
     all_data = []
