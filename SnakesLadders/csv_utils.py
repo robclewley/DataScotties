@@ -3,7 +3,7 @@ Utilities for working with CSV files representing all game move data.
 
 EXAMPLE USAGE:
 
-all_data = multi_run(n)
+all_data = multi_run(game, n)
 save_csv(all_data, filename)
 
 all_data = load_csv(filename)
